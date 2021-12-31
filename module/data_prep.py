@@ -1,4 +1,3 @@
-import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -17,6 +16,20 @@ import statsmodels.api as sm
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_absolute_error
 from sklearn.svm import SVR
+
+def stat_desc(y_pred):
+    print('Skewness {}'.format(stats.skew(y_pred)))
+    print('Kurtosis {}'.format(stats.kurtosis(y_pred)))
+    print('Mean {}'.format(y_pred.mean()))
+    print('STD {}'.format(y_pred.std()))
+
+def calculate_aic(n, mse, num_params):
+	  aic = n * m.log(mse) + 2 * num_params
+	  return aic
+
+def calculate_bic(n, mse, num_params):
+	  bic = n * m.log(mse) + num_params * m.log(n)
+	  return bic
 
 class data:
   def coin(self):
@@ -78,3 +91,81 @@ class data:
       self.bnb_n = self.bnb.iloc[:945]
       self.bnb_p = self.bnb.iloc[945:]
     return self
+
+  def return_value(self):
+    self.ret_btc_n = self.btc_n['Return']
+    self.ret_btc_p = self.btc_p['Return']
+    self.ret_eth_n = self.eth_n['Return']
+    self.ret_eth_p = self.eth_p['Return']
+    self.ret_tether_n = self.tether_n['Return']
+    self.ret_tether_p = self.tether_p['Return']
+    self.ret_bnb_n = self.bnb_n['Return']
+    self.ret_bnb_p = self.bnb_p['Return']
+    return self
+
+class model:
+  def model_data(self, ret_data):
+    n_test = m.floor(len(ret_data)/4)
+    self.X = ret_data.iloc[:-n_test]
+    self.y = ret_data.shift(-1).iloc[:-n_test]
+    self.X_val = ret_data.iloc[-n_test:-1]
+    self.y_val = ret_data.shift(-1).iloc[-n_test:-1]
+
+  def svr(self, kernel, eps, C=3, gamma=3, degree=3):
+    X = self.X#.reshape(-1,1)
+    y = self.y#.reshape(-1,1)
+    X_val = self.X_val#.reshape(-1,1)
+    y_val = self.y_val#.reshape(-1,1)
+    regressor = SVR(kernel = kernel, C=C, epsilon=eps,gamma=gamma,degree=degree)
+    regressor.fit(X,y)
+
+    #Predicting a new result
+    score = regressor.score(X,y)
+    y_pred = regressor.predict(X_val)
+    score_train = regressor.score(X,y)
+    score_test = regressor.score(X_val,y_val)
+    self.score = score
+    self.y_pred = y_pred
+    self.score_train = score_train
+    self.score_test = score_test
+    
+    #SVR Function
+    alpha = regressor.dual_coef_
+    support_vector = regressor.support_vectors_
+    if kernel =='poly':
+      print('w coef: {}'.format(np.matmul(alpha,(gamma**degree)*(support_vector)**degree)))
+      print('b coef: {} \n'.format(regressor.intercept_))
+      self.w_coef = np.matmul(alpha,(gamma**degree)*(support_vector)**degree)
+      self.b_coef = regressor.intercept_
+
+    else:
+      print('w coef: {}'.format(np.matmul(alpha,support_vector)))
+      print('b coef: {} \n'.format(regressor.intercept_))
+      self.w_coef = np.matmul(alpha,support_vector)
+      self.b_coef = regressor.intercept_
+
+    #Model Validation
+    print("Train score: {}".format(score_train))
+    print('Test score: {} \n'.format(score_test))
+    print("MSE:", mean_squared_error(y_val,y_pred))
+    print("MAE:",mean_absolute_error(y_val,y_pred))
+    print("RMSE:", np.sqrt(mean_squared_error(y_val,y_pred)))
+    print('AIC {}'.format(calculate_aic(len(X_val),mean_squared_error
+                                        (y_val,y_pred,),2)))
+    print('BIC {} \n'.format(calculate_bic(len(X_val),mean_squared_error
+                                        (y_val,y_pred,),2)))
+    print('Statistika Deskriptif Data Populasi')
+    print(stat_desc(y_val))
+    print('Statistika Deskriptif Prediksi')
+    print(stat_desc(y_pred))
+
+    #Plot
+    figure(figsize=(10, 6), dpi=80)
+    plt.plot(y_val,label='Observed volatility');
+    plt.plot(pd.Series(y_pred, index=y_val.index),'r',ls='--',label='SVR forecasted volatility');
+    plt.title('Predicted Volatility');
+    plt.xlabel('Days')
+    plt.ylabel('Volatility')
+    plt.legend(loc='upper right');
+
+    return y_pred, regressor
