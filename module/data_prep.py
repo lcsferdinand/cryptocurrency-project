@@ -131,11 +131,11 @@ def calculate_bic(n, mse, num_params):
 	  return bic
 
 class data:
-  def coin(self):
-    self.btc = yf.download("BTC-USD",start = '2017-08-01',end='2021-09-30')
-    self.eth = yf.download("ETH-USD",start = '2017-08-01',end='2021-09-30')
-    self.tether = yf.download("USDT-USD",start = '2017-08-01',end='2021-09-30')
-    self.bnb = yf.download("BNB-USD",start = '2017-08-01',end='2021-09-30')
+  def coin(self,start='2017-08-01',end='2021-09-30'):
+    self.btc = yf.download("BTC-USD",start = start,end=end)
+    self.eth = yf.download("ETH-USD",start = start,end=end)
+    self.tether = yf.download("USDT-USD",start = start,end=end)
+    self.bnb = yf.download("BNB-USD",start = start,end=end)
     print('coins data sucessfully generated')
     
     for coins in self.btc,self.eth,self.tether,self.bnb:
@@ -150,6 +150,15 @@ class data:
       for i in range (len(coins['Close'])-1):
         coins['Return'][i]=m.log(coins['Close'][i+1]/coins['Close'][i])*100
       globals()['self.%s' % coins] = coins.iloc[:-1]
+
+    self.btc_n = self.btc.iloc[:945]
+    self.btc_p = self.btc.iloc[945:]
+    self.eth_n = self.eth.iloc[:945]
+    self.eth_p = self.eth.iloc[945:]
+    self.tether_n = self.tether.iloc[:945]
+    self.tether_p = self.tether.iloc[945:]
+    self.bnb_n = self.bnb.iloc[:945]
+    self.bnb_p = self.bnb.iloc[945:]
 
     return self
 
@@ -177,18 +186,6 @@ class data:
     print('Kurtosis {}'.format(stats.kurtosis(self.bnb['Return'])))
     print('Mean {}'.format(self.bnb['Return'].mean()))
     print('STD {}'.format(self.bnb['Return'].std()))
-    return self
-
-  def split(self):
-    for coins in self.btc,self.eth,self.tether,self.bnb:
-      self.btc_n = self.btc.iloc[:945]
-      self.btc_p = self.btc.iloc[945:]
-      self.eth_n = self.eth.iloc[:945]
-      self.eth_p = self.eth.iloc[945:]
-      self.tether_n = self.tether.iloc[:945]
-      self.tether_p = self.tether.iloc[945:]
-      self.bnb_n = self.bnb.iloc[:945]
-      self.bnb_p = self.bnb.iloc[945:]
     return self
 
   def return_value(self):
