@@ -10,26 +10,27 @@ from matplotlib.pyplot import figure
 
 from utils_func import *
 
-def train_test_split(self, ret_data,test_ratio=0.25):
+def train_test_split(ret_data,test_ratio=0.25):
     """
     ret_data: return of cryptocurrency data
     """
     n_test = m.floor(len(ret_data)*test_ratio)
-    self.ret_data = ret_data
-    self.X = ret_data.iloc[:-n_test]
-    self.y = ret_data.shift(-1).iloc[:-n_test]
-    self.X_val = ret_data.iloc[-n_test:-1]
-    self.y_val = ret_data.shift(-1).iloc[-n_test:-1]
+    ret_data = ret_data
+    X = ret_data.iloc[:-n_test]
+    y = ret_data.shift(-1).iloc[:-n_test]
+    X_val = ret_data.iloc[-n_test:-1]
+    y_val = ret_data.shift(-1).iloc[-n_test:-1]
+    return X,y,X_val,y_val
 
-def calculate_aic(n, mse, num_params):
-    aic = n * m.log(mse) + 2 * num_params
-    return aic
+#def calculate_aic(n, mse, num_params):
+    #aic = n * m.log(mse) + 2 * num_params
+    #return aic
 
-def calculate_bic(n, mse, num_params):
-    bic = n * m.log(mse) + num_params * m.log(n)
-    return bic
+#def calculate_bic(n, mse, num_params):
+    #bic = n * m.log(mse) + num_params * m.log(n)
+    #return bic
 
-def model_validation(y_val,y_pred,desc_stat=desc_stat_svr):
+def model_validation(y_val,y_pred,desc_stat=False):
     mse = mean_squared_error(y_val,y_pred)
     mae = mean_absolute_error(y_val,y_pred)
     rmse = np.sqrt(mean_squared_error(y_val,y_pred))
@@ -61,7 +62,7 @@ def svr_plot(y_val,y_pred,rv_name):
 
 class model:
 
-  def svr(self,ret_data, coins, period, kernel, eps, C=3, gamma=3, degree=3,split = False,test_ratio=0.25,plot_svr=True,desc_stat_svr=True,rv='r'):
+  def svr(self,ret_data, coins, period, kernel, eps, C=3, gamma=3, degree=3,split = False,test_ratio=0.25,plot_svr=True,desc_stat_svr=False,rv='r'):
     """
     kernel: svr kerenel
     eps: svr epsilon 
@@ -74,7 +75,7 @@ class model:
     split: True if you want to train test split
     """
     if split == True:  
-        train_test_split(self, ret_data,test_ratio=test_ratio)
+        self.X,self.y,self.X_val,self.y_val=train_test_split(ret_data,test_ratio=test_ratio)
     else:
        self.ret_data = ret_data
        self.X = ret_data.iloc[:-1]
@@ -143,7 +144,7 @@ class model:
     else:
       print('kernel type not supported')
   
-    model_validation(y_val,y_pred,desc_stat_svr=desc_stat_svr)
+    model_validation(y_val,y_pred,desc_stat=desc_stat_svr)
 
     if plot_svr:
       svr_plot(y_val,y_pred,rv_name)
