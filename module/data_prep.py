@@ -95,15 +95,17 @@ class data:
       for i in range (len(coins['Close'])-1):
         coins['Return'][i]=m.log(coins['Close'][i+1]/coins['Close'][i])*100
       globals()['self.%s' % coins] = coins.iloc[:-1]
-
-    self.btc_n = self.btc.iloc[:945]
-    self.btc_p = self.btc.iloc[945:]
-    self.eth_n = self.eth.iloc[:945]
-    self.eth_p = self.eth.iloc[945:]
-    self.tether_n = self.tether.iloc[:945]
-    self.tether_p = self.tether.iloc[945:]
-    self.bnb_n = self.bnb.iloc[:945]
-    self.bnb_p = self.bnb.iloc[945:]
+      
+    index_p = self.btc.loc[self.btc['Date']=='2020-03-03'].index[0]
+    
+    self.btc_n = self.btc.iloc[:index_p]
+    self.btc_p = self.btc.iloc[index_p:]
+    self.eth_n = self.eth.iloc[:index_p]
+    self.eth_p = self.eth.iloc[index_p:]
+    self.tether_n = self.tether.iloc[:index_p]
+    self.tether_p = self.tether.iloc[index_p:]
+    self.bnb_n = self.bnb.iloc[:index_p]
+    self.bnb_p = self.bnb.iloc[index_p:]
 
     return self
 

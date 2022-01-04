@@ -27,7 +27,7 @@ def train_test_split(ret_data,test_ratio=0.25):
     #bic = n * m.log(mse) + num_params * m.log(n)
     #return bic
 
-def model_validation(X_val,y_val,y_pred,regressor,desc_stat=False):
+def model_validation(X,y,X_val,y_val,y_pred,regressor,desc_stat=False):
     score_train = regressor.score(X,y)
     score_test = regressor.score(X_val,y_val)
     mse = mean_squared_error(y_val,y_pred)
@@ -100,7 +100,7 @@ class model:
 
     #Training
     self.regressor = SVR(kernel = kernel, C=C, epsilon=eps,gamma=gamma,degree=degree)
-    self.regressor.fit(X,y)
+    self.regressor.fit(self.X,self.y)
     
     #Predicting a new result
     #self.score = self.regressor.score(X,y)
@@ -135,7 +135,7 @@ class model:
     else:
       print('kernel type not supported')
   
-    model_validation(X_val,y_val,self.y_pred,regressor,desc_stat=desc_stat_svr)
+    model_validation(self.X,self.y,self.X_val,self.y_val,self.y_pred,self.regressor,desc_stat=desc_stat_svr)
 
     if plot_svr:
-      svr_plot(y_val,self.y_pred,rv_name)
+      svr_plot(self.y_val,self.y_pred,rv_name)

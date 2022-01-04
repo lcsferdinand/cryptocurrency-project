@@ -22,7 +22,7 @@ def stat_desc(y_pred):
     print('Mean {}'.format(y_pred.mean()))
     print('STD {}'.format(y_pred.std()))
 
-def garch_df(df_sg,p,q): #make data frame base on GARCH(p,q)
+def garch_df(df_sg,p,q,test_ratio=0.25): #make data frame base on GARCH(p,q)
   # df_sg = pd.DataFrame(u2)
   # df_sg.rename(columns={'Return':'u2'},inplace=True)
   # df_sg['vol_prox']=(df['Return'].iloc[:-1]-df['Return'].iloc[:-1].mean())**2
@@ -65,7 +65,7 @@ def garch_df(df_sg,p,q): #make data frame base on GARCH(p,q)
     selected_col = df_sg[sorted(df_sg.columns)].iloc[:,:p].iloc[:,-p:].columns #select return
     selected_col= selected_col.append(df_sg[sorted(df_sg.columns)].iloc[:,-q-1:-1].columns) #select volatility
     
-  n_test = m.floor(len(df_sg)/4)
+  n_test = m.floor(len(df_sg)*test_ratio)
   # print('n_test: ',n_test)
   X_sg = df_sg[selected_col].iloc[:-n_test]
   y_sg = df_sg[df_sg.iloc[:,-1:].columns].iloc[:-n_test]
