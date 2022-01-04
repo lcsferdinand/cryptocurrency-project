@@ -8,7 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import figure
 
-from utils import *
+from utils_func import *
 
 def train_test_split(self, ret_data,test_ratio=0.25):
     """
