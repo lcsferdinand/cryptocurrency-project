@@ -1,8 +1,5 @@
-from sklearn.metrics import mean_squared_error
-from sklearn.metrics import mean_absolute_error
 from sklearn.svm import SVR
 
-import math as m
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -30,7 +27,9 @@ def train_test_split(ret_data,test_ratio=0.25):
     #bic = n * m.log(mse) + num_params * m.log(n)
     #return bic
 
-def model_validation(y_val,y_pred,desc_stat=False):
+def model_validation(X_val,y_val,y_pred,regressor,desc_stat=False):
+    score_train = regressor.score(X,y)
+    score_test = regressor.score(X_val,y_val)
     mse = mean_squared_error(y_val,y_pred)
     mae = mean_absolute_error(y_val,y_pred)
     rmse = np.sqrt(mean_squared_error(y_val,y_pred))
@@ -74,25 +73,17 @@ class model:
     first run rv = 'r' to able to run rv = 'v'
     split: True if you want to train test split
     """
-    if split == True:  
-        self.X,self.y,self.X_val,self.y_val=train_test_split(ret_data,test_ratio=test_ratio)
-    else:
-       self.ret_data = ret_data
-       self.X = ret_data.iloc[:-1]
-       self.y = ret_data.shift(-1)
-       self.X_val = X
-       self.y_val = y
-    
     if rv == 'r':
-      ret_data = self.ret_data
-      X = self.X
-      y = self.y
-      X_val = self.X_val
-      y_val = self.y_val
-      # regressor_r = SVR(kernel = kernel, C=C, epsilon=eps,gamma=gamma,degree=degree)
-      # regressor_r.fit(X,y)
-      # self.regressor = regressor_r
-      
+        self.ret_data = ret_data
+        
+        if split == True:  
+            self.X,self.y,self.X_val,self.y_val=train_test_split(ret_data,test_ratio=test_ratio)
+        else:
+           self.X = ret_data.iloc[:-1]
+           self.y = ret_data.shift(-1)
+           self.X_val = X
+           self.y_val = y
+
     elif rv == 'v':
       self.u = self.y - self.regressor.predict(self.X).reshape(-1,1)
       self.u_pred = self.y_val - self.y_pred.reshape(-1,1)
@@ -102,7 +93,7 @@ class model:
 
       self.df_vol.rename(columns={'Return':'u_squared'},inplace=True)
       self.df_vol['vol_prox']=(ret_data.iloc[:-1]-ret_data.iloc[:-1].mean())**2
-      X,y,X_val,y_val = garch_df(self.df,1,1,test_ratio=test_ratio)
+      self.X,self.y,self.X_val,self.y_val = garch_df(self.df_vol,1,1,test_ratio=test_ratio)
       # regressor_v = SVR(kernel = kernel, C=C, epsilon=eps,gamma=gamma,degree=degree)
       # regressor_v.fit(X,y)
       # self.regressor = regressor_v
@@ -112,14 +103,14 @@ class model:
     self.regressor.fit(X,y)
     
     #Predicting a new result
-    score = self.regressor.score(X,y)
-    y_pred = self.regressor.predict(X_val)
-    score_train = self.regressor.score(X,y)
-    score_test = self.regressor.score(X_val,y_val)
-    self.score = score
-    self.y_pred = y_pred
-    self.score_train = score_train
-    self.score_test = score_test
+    #self.score = self.regressor.score(X,y)
+    self.y_pred = self.regressor.predict(self.X_val)
+    #self.score_train = self.regressor.score(X,y)
+    #self.score_test = self.regressor.score(X_val,y_val)
+    #self.score = score
+    #self.y_pred = y_pred
+    #self.score_train = score_train
+    #self.score_test = score_test
 
     if rv=='r':
       rv_name = 'Return'
@@ -144,7 +135,7 @@ class model:
     else:
       print('kernel type not supported')
   
-    model_validation(y_val,y_pred,desc_stat=desc_stat_svr)
+    model_validation(X_val,y_val,self.y_pred,regressor,desc_stat=desc_stat_svr)
 
     if plot_svr:
-      svr_plot(y_val,y_pred,rv_name)
+      svr_plot(y_val,self.y_pred,rv_name)
