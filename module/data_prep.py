@@ -12,57 +12,6 @@ import yfinance as yf
 from statsmodels.stats import diagnostic
 import statsmodels.api as sm
 
-#Machine Learning
-from sklearn.metrics import mean_squared_error
-from sklearn.metrics import mean_absolute_error
-from sklearn.svm import SVR
-
-def svr_func(X,y,X_val,y_val,kernel,eps,C=3,gamma=3,degree=3):
-  regressor = SVR(kernel = kernel, C=C, epsilon=eps,gamma=gamma,degree=degree)
-  regressor.fit(X,y)
-  # score = regressor.score(X,y)
-
-  #Predicting a new result
-  score = regressor.score(X,y)
-  y_pred = regressor.predict(X_val)
-  score_train = regressor.score(X,y)
-  score_test = regressor.score(X_val,y_val)
-
-  #SVR Function
-  alpha = regressor.dual_coef_
-  support_vector = regressor.support_vectors_
-  if kernel =='poly':
-    print('w koef: {}'.format(np.matmul(alpha,(gamma**degree)*(support_vector)**degree)))
-    print('b koef: {} \n'.format(regressor.intercept_))
-  else:
-    print('w koef: {}'.format(np.matmul(alpha,support_vector)))
-    print('b koef: {} \n'.format(regressor.intercept_))
-
-  #Model Validation
-  print("Train score: {}".format(score_train))
-  print('Test score: {} \n'.format(score_test))
-  print("MSE:", mean_squared_error(y_val,y_pred))
-  print("MAE:",mean_absolute_error(y_val,y_pred))
-  print("RMSE:", np.sqrt(mean_squared_error(y_val,y_pred)))
-  print('AIC {}'.format(calculate_aic(len(X_val),mean_squared_error
-                                      (y_val,y_pred,),2)))
-  print('BIC {} \n'.format(calculate_bic(len(X_val),mean_squared_error
-                                      (y_val,y_pred,),2)))
-  print('Statistika Deskriptif Data Populasi')
-  print(stat_desc(y_val))
-  print('Statistika Deskriptif Prediksi')
-  print(stat_desc(y_pred))
-
-  #Plot
-  figure(figsize=(10, 6), dpi=80)
-  plt.plot(y_val,label='Observed volatility');
-  plt.plot(pd.Series(y_pred, index=y_val.index),'r',ls='--',label='SVR forecasted volatility');
-  plt.title('Predicted Volatility');
-  plt.xlabel('Days')
-  plt.ylabel('Volatility')
-  plt.legend(loc='upper right');
-
-  return y_pred,regressor
 
 def stat_desc(y_pred):
     print('Skewness {}'.format(stats.skew(y_pred)))
@@ -70,65 +19,61 @@ def stat_desc(y_pred):
     print('Mean {}'.format(y_pred.mean()))
     print('STD {}'.format(y_pred.std()))
 
-def garch_df(df_sg,p,q): #make data frame base on GARCH(p,q)
-  # df_sg = pd.DataFrame(u2)
-  # df_sg.rename(columns={'Return':'u2'},inplace=True)
-  # df_sg['vol_prox']=(df['Return'].iloc[:-1]-df['Return'].iloc[:-1].mean())**2
+def garch_df(df,p,q,test_ratio=0.25): #make data frame base on GARCH(p,q)
 
   if p>q:
     #return
     for i in range(1,p):
-      df_sg['u2_shift'+str(i)] =  df_sg['u2'].shift(-i)
+      df['u_squared_shift'+str(i)] =  df['u_squared'].shift(-i)
 
     #volatility
     diff = p-q
     for i in range(p,diff-1,-1):
-      df_sg['vol_prox_shift'+str(i)]= df_sg['vol_prox'].shift(-i)
+      df['vol_prox_shift'+str(i)]= df['vol_prox'].shift(-i)
 
   elif p<q:
     #return
     diff = q-p
     for i in range(q-1,diff-1,-1):
-      df_sg['u2_shift'+str(i)] =  df_sg['u2'].shift(-i)
+      df['u_squared_shift'+str(i)] =  df['u_squared'].shift(-i)
 
     #volatility
     for i in range(q,0,-1):
-      df_sg['vol_prox_shift'+str(i)]= df_sg['vol_prox'].shift(-i)
+      df['vol_prox_shift'+str(i)]= df['vol_prox'].shift(-i)
       
   else:
     #return
     for i in range(1,p):
-      df_sg['u2_shift'+str(i)] =  df_sg['u2'].shift(-i)
+      df['u_squared_shift'+str(i)] =  df['u_squared'].shift(-i)
     #volatility
     for i in range(1,q+1):
-      df_sg['vol_prox_shift'+str(i)]= df_sg['vol_prox'].shift(-i)  
+      df['vol_prox_shift'+str(i)]= df['vol_prox'].shift(-i)  
 
-  df_sg = df_sg.iloc[:-max(p,q)]
-  df_sg = df_sg[sorted(df_sg.columns)]
+  df = df.iloc[:-max(p,q)]
+  df = df[sorted(df.columns)]
 
   if p<q:
-    selected_col = df_sg[sorted(df_sg.columns)].iloc[:,:p+1].iloc[:,-p:].columns #select return
-    selected_col= selected_col.append(df_sg[sorted(df_sg.columns)].iloc[:,-q-1:-1].columns) #select volatility
+    selected_col = df[sorted(df.columns)].iloc[:,:p+1].iloc[:,-p:].columns #select return
+    selected_col= selected_col.append(df[sorted(df.columns)].iloc[:,-q-1:-1].columns) #select volatility
   else:
-    selected_col = df_sg[sorted(df_sg.columns)].iloc[:,:p].iloc[:,-p:].columns #select return
-    selected_col= selected_col.append(df_sg[sorted(df_sg.columns)].iloc[:,-q-1:-1].columns) #select volatility
+    selected_col = df[sorted(df.columns)].iloc[:,:p].iloc[:,-p:].columns #select return
+    selected_col= selected_col.append(df[sorted(df.columns)].iloc[:,-q-1:-1].columns) #select volatility
     
-  n_test = m.floor(len(df_sg)/4)
-  # print('n_test: ',n_test)
-  X_sg = df_sg[selected_col].iloc[:-n_test]
-  y_sg = df_sg[df_sg.iloc[:,-1:].columns].iloc[:-n_test]
-  X_sg_val = df_sg[selected_col].iloc[-n_test:]
-  y_sg_val = df_sg[df_sg.iloc[:,-1:].columns].iloc[-n_test:]
+  n_test = m.floor(len(df)*test_ratio)
+  X = df[selected_col].iloc[:-n_test]
+  y = df[df.iloc[:,-1:].columns].iloc[:-n_test]
+  X_val = df[selected_col].iloc[-n_test:]
+  y_val = df[df.iloc[:,-1:].columns].iloc[-n_test:]
 
-  return X_sg,y_sg,X_sg_val,y_sg_val
+  return X,y,X_val,y_val
 
-def calculate_aic(n, mse, num_params):
-	  aic = n * m.log(mse) + 2 * num_params
-	  return aic
+# def calculate_aic(n, mse, num_params):
+# 	  aic = n * m.log(mse) + 2 * num_params
+# 	  return aic
 
-def calculate_bic(n, mse, num_params):
-	  bic = n * m.log(mse) + num_params * m.log(n)
-	  return bic
+# def calculate_bic(n, mse, num_params):
+# 	  bic = n * m.log(mse) + num_params * m.log(n)
+# 	  return bic
 
 class data:
   def coin(self,start='2017-08-01',end='2021-09-30'):
