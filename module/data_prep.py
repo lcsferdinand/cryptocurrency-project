@@ -19,7 +19,7 @@ def stat_desc(y_pred):
     print('Mean {}'.format(y_pred.mean()))
     print('STD {}'.format(y_pred.std()))
 
-def garch_df(df,p,q,test_ratio=0.25): #make data frame base on GARCH(p,q)
+def garch_df(df,p,q,o,test_ratio=0.25): #make data frame base on GARCH(p,q)
 
   if p>q:
     #return
@@ -58,12 +58,33 @@ def garch_df(df,p,q,test_ratio=0.25): #make data frame base on GARCH(p,q)
   else:
     selected_col = df[sorted(df.columns)].iloc[:,:p].iloc[:,-p:].columns #select return
     selected_col= selected_col.append(df[sorted(df.columns)].iloc[:,-q-1:-1].columns) #select volatility
-    
-  n_test = m.floor(len(df)*test_ratio)
-  X = df[selected_col].iloc[:-n_test]
-  y = df[df.iloc[:,-1:].columns].iloc[:-n_test]
-  X_val = df[selected_col].iloc[-n_test:]
-  y_val = df[df.iloc[:,-1:].columns].iloc[-n_test:]
+
+  if o>0:
+    df['I']=0
+    for i in range(len(crypto.btc['Return'])):
+      if crypto.btc['Return'][i] < 0:
+        df['I'][i] = 1
+      else:
+        df['I'][i]=0
+
+    for i in range(o):
+      df['I_multiplied_shift'+str(i)] = df['I']*df[selected_col[i]]
+      selected_col=np.append(selected_col,'I_multiplied_shift'+str(i))
+
+    df.drop('I',axis=1,inplace=True)
+
+    n_test = m.floor(len(df)*test_ratio)
+    X = df[selected_col].iloc[:-n_test]
+    y = df[df.iloc[:,-(1+o):-o].columns].iloc[:-n_test]
+    X_val = df[selected_col].iloc[-n_test:]
+    y_val = df[df.iloc[:,-(1+o):-o].columns].iloc[-n_test:]
+
+  else:
+    n_test = m.floor(len(df)*test_ratio)
+    X = df[selected_col].iloc[:-n_test]
+    y = df[df.iloc[:,-1:].columns].iloc[:-n_test]
+    X_val = df[selected_col].iloc[-n_test:]
+    y_val = df[df.iloc[:,-1:].columns].iloc[-n_test:]
 
   return X,y,X_val,y_val
 
@@ -107,6 +128,15 @@ class data:
     self.bnb_n = self.bnb.iloc[:index_p]
     self.bnb_p = self.bnb.iloc[index_p:]
 
+    self.ret_btc_n = self.btc_n[['Return']]
+    self.ret_btc_p = self.btc_p[['Return']]
+    self.ret_eth_n = self.eth_n[['Return']]
+    self.ret_eth_p = self.eth_p[['Return']]
+    self.ret_tether_n = self.tether_n[['Return']]
+    self.ret_tether_p = self.tether_p[['Return']]
+    self.ret_bnb_n = self.bnb_n[['Return']]
+    self.ret_bnb_p = self.bnb_p[['Return']]
+
     return self
 
   def stat_desc(self):
@@ -135,16 +165,16 @@ class data:
     print('STD {}'.format(self.bnb['Return'].std()))
     return self
 
-  def return_value(self):
-    self.ret_btc_n = self.btc_n['Return']
-    self.ret_btc_p = self.btc_p['Return']
-    self.ret_eth_n = self.eth_n['Return']
-    self.ret_eth_p = self.eth_p['Return']
-    self.ret_tether_n = self.tether_n['Return']
-    self.ret_tether_p = self.tether_p['Return']
-    self.ret_bnb_n = self.bnb_n['Return']
-    self.ret_bnb_p = self.bnb_p['Return']
-    return self
+  # def return_value(self):
+  #   self.ret_btc_n = self.btc_n[['Return']]
+  #   self.ret_btc_p = self.btc_p[['Return']]
+  #   self.ret_eth_n = self.eth_n[['Return']]
+  #   self.ret_eth_p = self.eth_p[['Return']]
+  #   self.ret_tether_n = self.tether_n[['Return']]
+  #   self.ret_tether_p = self.tether_p[['Return']]
+  #   self.ret_bnb_n = self.bnb_n[['Return']]
+  #   self.ret_bnb_p = self.bnb_p[['Return']]
+  #   return self
 
   def plot_data(self,coins):
     if coins not in ['btc','eth','tether','bnb']:

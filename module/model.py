@@ -61,17 +61,25 @@ def svr_plot(y_val,y_pred,rv_name):
 
 class model:
 
-  def svr(self,ret_data, coins, period, kernel, eps, C=3, gamma=3, degree=3,split = False,test_ratio=0.25,plot_svr=True,desc_stat_svr=False,rv='r'):
+  def svr(self,ret_data, coins, period, kernel, eps, C=3, gamma=3, degree=3,split = False,test_ratio=0.25,plot_svr=True,desc_stat_svr=False,rv='r',p=1,q=1,o=0):
     """
+    ret_data: return of cryptocurrency
+    coins:  Coin name that will be display
+    period: Return period that will be display
     kernel: svr kerenel
     eps: svr epsilon 
     C: svr C
     gamma: svr gamma
     degree: svr degree
-    plot_svr: if True then the plot will be shown
-    rv: calculate return or volatiltiy, where r: return and v: volatiliy
-    first run rv = 'r' to able to run rv = 'v'
     split: True if you want to train test split
+    test_ratio: train test ratio
+    plot_svr: if True then the plot will be shown
+    desc_stats_svr: if True then descriptive statistics will be shown
+    rv: calculate return or volatiltiy, where r: return and v: volatiliy
+    p: GARCH p index
+    q: GARCH q index
+    first run rv = 'r' to able to run rv = 'v'
+    
     """
     if rv == 'r':
         self.ret_data = ret_data
@@ -93,7 +101,7 @@ class model:
 
       self.df_vol.rename(columns={'Return':'u_squared'},inplace=True)
       self.df_vol['vol_prox']=(ret_data.iloc[:-1]-ret_data.iloc[:-1].mean())**2
-      self.X,self.y,self.X_val,self.y_val = garch_df(self.df_vol,1,1,test_ratio=test_ratio)
+      self.X,self.y,self.X_val,self.y_val = garch_df(self.df_vol,p,q,o,test_ratio=test_ratio)
       # regressor_v = SVR(kernel = kernel, C=C, epsilon=eps,gamma=gamma,degree=degree)
       # regressor_v.fit(X,y)
       # self.regressor = regressor_v
