@@ -117,7 +117,7 @@ class model:
     elif rv == 'v':
       rv_name = 'Volatility'
       
-    print_msg_box(f'SVR {rv_name}\n -Coin Type: {coins} \n -Period: {period} \n -Kernel: {kernel}')
+    print_msg_box(f'SVR {rv_name}\n -Coin Type: {coins} \n -Period: {period} \n -Kernel: {kernel} \n p: {p} \n q: {q} \n o: {o}')
 
     #SVR Coefficients
     alpha = self.regressor.dual_coef_
