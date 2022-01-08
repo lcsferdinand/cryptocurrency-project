@@ -61,8 +61,8 @@ def garch_df(df,p,q,o,garch_test_ratio=0.25): #make data frame base on GARCH(p,q
 
   if o>0:
     df['I']=0
-    for i in range(len(crypto.btc['Return'])):
-      if crypto.btc['Return'][i] < 0:
+    for i in range(len(self.btc['Return'])):
+      if self.btc['Return'][i] < 0:
         df['I'][i] = 1
       else:
         df['I'][i]=0
@@ -72,19 +72,23 @@ def garch_df(df,p,q,o,garch_test_ratio=0.25): #make data frame base on GARCH(p,q
       selected_col=np.append(selected_col,'I_multiplied_shift'+str(i))
 
     df.drop('I',axis=1,inplace=True)
+    df.drop('Return',axis=1,inplace=True)
 
-    n_test = m.floor(len(df)*garch_test_ratio)
+    n_test = m.floor(len(df)*test_ratio)
     X = df[selected_col].iloc[:-n_test]
     y = df[df.iloc[:,-(1+o):-o].columns].iloc[:-n_test]
     X_val = df[selected_col].iloc[-n_test:]
     y_val = df[df.iloc[:,-(1+o):-o].columns].iloc[-n_test:]
 
   else:
-    n_test = m.floor(len(df)*garch_test_ratio)
+    n_test = m.floor(len(df)*test_ratio)
     X = df[selected_col].iloc[:-n_test]
     y = df[df.iloc[:,-1:].columns].iloc[:-n_test]
     X_val = df[selected_col].iloc[-n_test:]
     y_val = df[df.iloc[:,-1:].columns].iloc[-n_test:]
+    
+    df.drop('Return',axis=1,inplace=True)
+    
 
   return X,y,X_val,y_val
 

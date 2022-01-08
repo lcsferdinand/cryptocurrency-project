@@ -102,7 +102,8 @@ class model:
 
       self.df_vol.rename(columns={'Return':'u_squared'},inplace=True)
       self.df_vol['vol_prox']=(ret_data.iloc[:-1]-ret_data.iloc[:-1].mean())**2
-      self.X,self.y,self.X_val,self.y_val = garch_df(self.df_vol,p,q,o)
+      self.df_vol['Return'] = ret_data
+      self.X,self.y,self.X_val,self.y_val = garch_df(self.df_vol,p,q,o,test_ratio=test_ratio)
 
     #Training
     self.regressor = SVR(kernel = kernel, C=C, epsilon=eps,gamma=gamma,degree=degree)
