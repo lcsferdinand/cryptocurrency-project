@@ -19,7 +19,7 @@ def stat_desc(y_pred):
     print('Mean {}'.format(y_pred.mean()))
     print('STD {}'.format(y_pred.std()))
 
-def garch_df(df,p,q,o,ratio=0.25): #make data frame base on GARCH(p,q)
+def garch_df(df,p,q,o,garch_test_ratio=0.25): #make data frame base on GARCH(p,q)
 
   if p>q:
     #return
@@ -73,14 +73,14 @@ def garch_df(df,p,q,o,ratio=0.25): #make data frame base on GARCH(p,q)
 
     df.drop('I',axis=1,inplace=True)
 
-    n_test = m.floor(len(df)*ratio)
+    n_test = m.floor(len(df)*garch_test_ratio)
     X = df[selected_col].iloc[:-n_test]
     y = df[df.iloc[:,-(1+o):-o].columns].iloc[:-n_test]
     X_val = df[selected_col].iloc[-n_test:]
     y_val = df[df.iloc[:,-(1+o):-o].columns].iloc[-n_test:]
 
   else:
-    n_test = m.floor(len(df)*ratio)
+    n_test = m.floor(len(df)*garch_test_ratio)
     X = df[selected_col].iloc[:-n_test]
     y = df[df.iloc[:,-1:].columns].iloc[:-n_test]
     X_val = df[selected_col].iloc[-n_test:]

@@ -102,24 +102,14 @@ class model:
 
       self.df_vol.rename(columns={'Return':'u_squared'},inplace=True)
       self.df_vol['vol_prox']=(ret_data.iloc[:-1]-ret_data.iloc[:-1].mean())**2
-      self.X,self.y,self.X_val,self.y_val = garch_df(self.df_vol,p,q,o,ratio=test_ratio)
-      # regressor_v = SVR(kernel = kernel, C=C, epsilon=eps,gamma=gamma,degree=degree)
-      # regressor_v.fit(X,y)
-      # self.regressor = regressor_v
+      self.X,self.y,self.X_val,self.y_val = garch_df(self.df_vol,p,q,o,garch_test_ratio=test_ratio)
 
     #Training
     self.regressor = SVR(kernel = kernel, C=C, epsilon=eps,gamma=gamma,degree=degree)
     self.regressor.fit(self.X,self.y)
     
     #Predicting a new result
-    #self.score = self.regressor.score(X,y)
     self.y_pred = self.regressor.predict(self.X_val)
-    #self.score_train = self.regressor.score(X,y)
-    #self.score_test = self.regressor.score(X_val,y_val)
-    #self.score = score
-    #self.y_pred = y_pred
-    #self.score_train = score_train
-    #self.score_test = score_test
 
     if rv=='r':
       rv_name = 'Return'
