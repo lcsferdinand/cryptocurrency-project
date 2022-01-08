@@ -107,6 +107,15 @@ class data:
     self.bnb_n = self.bnb.iloc[:index_p]
     self.bnb_p = self.bnb.iloc[index_p:]
 
+    self.ret_btc_n = self.btc_n[['Return']]
+    self.ret_btc_p = self.btc_p[['Return']]
+    self.ret_eth_n = self.eth_n[['Return']]
+    self.ret_eth_p = self.eth_p[['Return']]
+    self.ret_tether_n = self.tether_n[['Return']]
+    self.ret_tether_p = self.tether_p[['Return']]
+    self.ret_bnb_n = self.bnb_n[['Return']]
+    self.ret_bnb_p = self.bnb_p[['Return']]
+
     return self
 
   def stat_desc(self):
@@ -135,16 +144,16 @@ class data:
     print('STD {}'.format(self.bnb['Return'].std()))
     return self
 
-  def return_value(self):
-    self.ret_btc_n = self.btc_n['Return']
-    self.ret_btc_p = self.btc_p['Return']
-    self.ret_eth_n = self.eth_n['Return']
-    self.ret_eth_p = self.eth_p['Return']
-    self.ret_tether_n = self.tether_n['Return']
-    self.ret_tether_p = self.tether_p['Return']
-    self.ret_bnb_n = self.bnb_n['Return']
-    self.ret_bnb_p = self.bnb_p['Return']
-    return self
+  # def return_value(self):
+  #   self.ret_btc_n = self.btc_n[['Return']]
+  #   self.ret_btc_p = self.btc_p[['Return']]
+  #   self.ret_eth_n = self.eth_n[['Return']]
+  #   self.ret_eth_p = self.eth_p[['Return']]
+  #   self.ret_tether_n = self.tether_n[['Return']]
+  #   self.ret_tether_p = self.tether_p[['Return']]
+  #   self.ret_bnb_n = self.bnb_n[['Return']]
+  #   self.ret_bnb_p = self.bnb_p[['Return']]
+  #   return self
 
   def plot_data(self,coins):
     if coins not in ['btc','eth','tether','bnb']:
