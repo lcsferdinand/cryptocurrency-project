@@ -78,6 +78,7 @@ class model:
     rv: calculate return or volatiltiy, where r: return and v: volatiliy
     p: GARCH p index
     q: GARCH q index
+    o: GJR-GARCH o index
     first run rv = 'r' to able to run rv = 'v'
     
     """
@@ -101,7 +102,7 @@ class model:
 
       self.df_vol.rename(columns={'Return':'u_squared'},inplace=True)
       self.df_vol['vol_prox']=(ret_data.iloc[:-1]-ret_data.iloc[:-1].mean())**2
-      self.X,self.y,self.X_val,self.y_val = garch_df(self.df_vol,p,q,o,test_ratio=test_ratio)
+      self.X,self.y,self.X_val,self.y_val = garch_df(self.df_vol,p,q,o,ratio=test_ratio)
       # regressor_v = SVR(kernel = kernel, C=C, epsilon=eps,gamma=gamma,degree=degree)
       # regressor_v.fit(X,y)
       # self.regressor = regressor_v
