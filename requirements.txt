@@ -1,5 +1,4 @@
-arch
-yfinance
-scikit-optimize
-sigopt
-vartests
+arch==5.1.0
+yfinance==0.1.68
+scikit-optimize==0.9.0
+sigopt==8.2.0
