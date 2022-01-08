@@ -1,5 +1,6 @@
 import math as m
 from scipy import stats 
+import numpy as np
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_absolute_error
 
@@ -57,16 +58,16 @@ def garch_df(df,p,q,o,ratio=0.25): #make data frame base on GARCH(p,q)
   df = df[sorted(df.columns)]
 
   if p<q:
-    selected_col = df[sorted(df.columns)].iloc[:,:p+1].iloc[:,-p:].columns #select return
-    selected_col= selected_col.append(df[sorted(df.columns)].iloc[:,-q-1:-1].columns) #select volatility
+    selected_col = df[sorted(df.drop('Return',axis=1).columns)].iloc[:,:p+1].iloc[:,-p:].columns #select return
+    selected_col= selected_col.append(df[sorted(df.drop('Return',axis=1).columns)].iloc[:,-q-1:-1].columns) #select volatility
   else:
-    selected_col = df[sorted(df.columns)].iloc[:,:p].iloc[:,-p:].columns #select return
-    selected_col= selected_col.append(df[sorted(df.columns)].iloc[:,-q-1:-1].columns) #select volatility
+    selected_col = df[sorted(df.drop('Return',axis=1).columns)].iloc[:,:p].iloc[:,-p:].columns #select return
+    selected_col= selected_col.append(df[sorted(df.drop('Return',axis=1).columns)].iloc[:,-q-1:-1].columns) #select volatility
 
   if o>0:
     df['I']=0
-    for i in range(len(self.btc['Return'])):
-      if self.btc['Return'][i] < 0:
+    for i in range(len(df['Return'])):
+      if df['Return'][i] < 0:
         df['I'][i] = 1
       else:
         df['I'][i]=0
