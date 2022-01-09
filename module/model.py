@@ -19,14 +19,6 @@ def train_test_split(ret_data,test_ratio=0.25):
     y_val = ret_data.shift(-1).iloc[-n_test:-1]
     return X,y,X_val,y_val
 
-#def calculate_aic(n, mse, num_params):
-    #aic = n * m.log(mse) + 2 * num_params
-    #return aic
-
-#def calculate_bic(n, mse, num_params):
-    #bic = n * m.log(mse) + num_params * m.log(n)
-    #return bic
-
 def model_validation(X,y,X_val,y_val,y_pred,regressor,desc_stat=False):
     score_train = regressor.score(X,y)
     score_test = regressor.score(X_val,y_val)
@@ -117,7 +109,10 @@ class model:
     elif rv == 'v':
       rv_name = 'Volatility'
       
-    print_msg_box(f'SVR {rv_name}\n -Coin Type: {coins} \n -Period: {period} \n -Kernel: {kernel} \n p: {p} \n q: {q} \n o: {o}')
+    if rv == 'v':
+        print_msg_box(f'SVR {rv_name}\n -Coin Type: {coins} \n -Period: {period} \n -Kernel: {kernel} \n -p: {p} \n -q: {q} \n -o: {o}')
+    elif rv == 'r':
+        print_msg_box(f'SVR {rv_name}\n -Coin Type: {coins} \n -Period: {period} \n -Kernel: {kernel}')
 
     #SVR Coefficients
     alpha = self.regressor.dual_coef_
