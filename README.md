@@ -1,7 +1,7 @@
 # cryptocurrency-project
 Undergraduate Paper Project about cryptocurrency return prediction
 
-# Contributor
+# Contributors
 [Ferdinand Adianto Harjono](https://github.com/lcsferdinand) - Code initiator, Researcher
 
 [Robin Viltoriano](https://github.com/robinviltoriano) - Code initiator, Researcher
