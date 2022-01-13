@@ -2,6 +2,9 @@ import numpy as np
 import math as m
 from itertools import chain
 import random
+import pandas as pd
+import vartests
+
 
 def minus_fix(minus_array):
   for i in range(len(minus_array)):
@@ -77,4 +80,47 @@ class risk:
         for i in range(len(alpha)):
             ces.append(len([x for x in self.return_gen if x < self.es_mat[i][1]])/10000)
         self.ces_mat = np.column_stack((alpha,ces))
+    
+    def kupiec_test(self, violations, var_conf_level=0.99, conf_level=0.95):
+        '''Perform Kupiec Test (1995).
+        The main goal is to verify if the number of violations, i.e. proportion of failures, is consistent with the
+        violations predicted by the model.
+        
+            Parameters:
+                violations (series):    series of violations of VaR
+                var_conf_level (float): VaR confidence level
+                conf_level (float):     test confidence level
+            Returns:
+                answer (dict):          statistics and decision of the test
+        '''
+        if isinstance(violations, pd.core.series.Series):
+            v = violations[violations==1].count()
+        elif isinstance(violations, pd.core.frame.DataFrame):
+            v = violations[violations==1].count().values[0]
 
+        N = violations.shape[0]
+        theta= 1-(v/N)
+
+        if v < 0.001:
+            V = -2*np.log((1-(v/N))**(N))
+        else:
+            part1 = ((1-var_conf_level)**(v)) * (var_conf_level**(N-v))
+            
+            part11= ((1-theta)**(v)) * (theta**(N-v))
+            
+            fact = math.factorial(N) / ( math.factorial(v) * math.factorial(N-v))
+            
+            num1 = part1 * fact
+            den1 = part11 * fact 
+        
+            V = -2*(np.log(num1/den1))
+        
+        chi_square_test = chi2.cdf(V,1) #one degree of freedom
+        
+        if chi_square_test < conf_level: result = "Fail to reject H0"
+        elif v==0 and N<=255 and var_conf_level==0.99: result = "Fail to reject H0"
+        else: result = "Reject H0"
+            
+        return {"statictic test":V, "chi square value":chi_square_test, 
+                "null hypothesis": f"Probability of failure is {round(1-var_conf_level,3)}",
+                "result":result}
