@@ -3,7 +3,7 @@ import math as m
 from itertools import chain
 import random
 import pandas as pd
-import vartests
+# import vartests
 
 
 def minus_fix(minus_array):
