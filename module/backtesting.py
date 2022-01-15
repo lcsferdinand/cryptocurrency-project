@@ -4,7 +4,14 @@ from itertools import chain
 import random
 import pandas as pd
 # import vartests
-
+from scipy import stats
+import numpy as np
+from scipy import optimize
+from scipy.stats import chi2
+import math
+import arch
+import time
+import pandas as pd
 
 def minus_fix(minus_array):
   for i in range(len(minus_array)):
@@ -105,15 +112,18 @@ class risk:
             V = -2*np.log((1-(v/N))**(N))
         else:
             part1 = ((1-var_conf_level)**(v)) * (var_conf_level**(N-v))
-            
+            self.part_1_left =(1-var_conf_level)**(v)
+            self.part_1_right = (var_conf_level**(N-v))
             part11= ((1-theta)**(v)) * (theta**(N-v))
+            # self.
             
-            fact = math.factorial(N) / ( math.factorial(v) * math.factorial(N-v))
+            # fact = math.factorial(N) / ( math.factorial(v) * math.factorial(N-v))
             
-            num1 = part1 * fact
-            den1 = part11 * fact 
+            num1 = part1 #* fact
+            den1 = part11 #* fact 
         
             V = -2*(np.log(num1/den1))
+            self.V_val = V
         
         chi_square_test = chi2.cdf(V,1) #one degree of freedom
         
