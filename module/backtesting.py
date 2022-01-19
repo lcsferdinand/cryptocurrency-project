@@ -87,12 +87,8 @@ class risk:
         for i in range(len(alpha)):
             ces.append(len([x for x in self.return_gen if x < self.es_mat[i][1]])/10000)
         self.ces_mat = np.column_stack((alpha,ces))
-<<<<<<< HEAD
         
-        
-=======
-    
->>>>>>> 81415788b0e7dc71d16077caa2147c9563ae52ca
+
     def kupiec_test(self, violations, var_conf_level=0.99, conf_level=0.95):
         '''Perform Kupiec Test (1995).
         The main goal is to verify if the number of violations, i.e. proportion of failures, is consistent with the
@@ -112,7 +108,6 @@ class risk:
 
         N = violations.shape[0]
         theta= 1-(v/N)
-<<<<<<< HEAD
 
         if v < 0.001:
             V = -2*np.log((1-(v/N))**(N))
@@ -140,8 +135,6 @@ class risk:
         return {"statictic test":V, "chi square value":chi_square_test, 
                 "null hypothesis": f"Probability of failure is {round(1-var_conf_level,3)}",
                 "result":result}
-=======
->>>>>>> 81415788b0e7dc71d16077caa2147c9563ae52ca
 
         if v < 0.001:
             V = -2*np.log((1-(v/N))**(N))
