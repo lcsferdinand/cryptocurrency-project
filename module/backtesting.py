@@ -74,7 +74,7 @@ class risk:
         y_pred = minus_fix(y_pred)
         random.seed(seed)
         for i in range(10000):
-            self.return_gen.append(u[-1:].values+np.sqrt(y_pred[-1])*random.choice(self.z_hat.reset_index()['Return']))
+            self.return_gen.append(u[-1:].iloc[0][0]+np.sqrt(y_pred[-1])*random.choice(self.z_hat.reset_index()['Return']))
 
     def cvar(self,alpha):
         cvar = []
