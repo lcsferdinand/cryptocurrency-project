@@ -12,6 +12,7 @@ import math
 import arch
 import time
 import pandas as pd
+import random
 
 def minus_fix(minus_array):
   for i in range(len(minus_array)):
@@ -65,12 +66,13 @@ class risk:
             j+=1
         self.es_mat = np.column_stack((alpha,es))
     
-    def generate_data(self,u,y_pred):
+    def generate_data(self,u,y_pred,seed=0):
         """
         u: predicted u
         """
         self.return_gen=[]
         y_pred = minus_fix(y_pred)
+        random.seed(seed)
         for i in range(10000):
             self.return_gen.append(u[-1:].values+np.sqrt(y_pred[-1])*random.choice(self.z_hat.reset_index()['Return']))
 
