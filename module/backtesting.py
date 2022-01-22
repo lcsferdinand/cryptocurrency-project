@@ -114,18 +114,21 @@ class risk:
         if v < 0.001:
             V = -2*np.log((1-(v/N))**(N))
         else:
-            part1 = ((1-var_conf_level)**(v)) * (var_conf_level**(N-v))
-            self.part_1_left =(1-var_conf_level)**(v)
-            self.part_1_right = (var_conf_level**(N-v))
-            part11= ((1-theta)**(v)) * (theta**(N-v))
-            # self.
+            # part1 = ((1-var_conf_level)**(v)) * (var_conf_level**(N-v))
+  #           self.part_1_left =(1-var_conf_level)**(v)
+  #           self.part_1_right = (var_conf_level**(N-v))
+  #           part11= ((1-theta)**(v)) * (theta**(N-v))
+  #           # self.
+  #
+  #           # fact = math.factorial(N) / ( math.factorial(v) * math.factorial(N-v))
+  #
+  #           num1 = part1 #* fact
+  #           den1 = part11 #* fact
             
-            # fact = math.factorial(N) / ( math.factorial(v) * math.factorial(N-v))
-            
-            num1 = part1 #* fact
-            den1 = part11 #* fact 
+            left = ((var_conf_level/theta)**(N-v))
+            right = ((1-var_conf_level)/(1-theta))**(v)
         
-            V = -2*(np.log(num1/den1))
+            V = -2*(np.log(left*right))
             self.V_val = V
         
         chi_square_test = chi2.cdf(V,1) #one degree of freedom
@@ -141,18 +144,21 @@ class risk:
         if v < 0.001:
             V = -2*np.log((1-(v/N))**(N))
         else:
-            part1 = ((1-var_conf_level)**(v)) * (var_conf_level**(N-v))
-            self.part_1_left =(1-var_conf_level)**(v)
-            self.part_1_right = (var_conf_level**(N-v))
-            part11= ((1-theta)**(v)) * (theta**(N-v))
-            # self.
-            
-            # fact = math.factorial(N) / ( math.factorial(v) * math.factorial(N-v))
-            
-            num1 = part1 #* fact
-            den1 = part11 #* fact 
+            # part1 = ((1-var_conf_level)**(v)) * (var_conf_level**(N-v))
+         #    self.part_1_left =(1-var_conf_level)**(v)
+         #    self.part_1_right = (var_conf_level**(N-v))
+         #    part11= ((1-theta)**(v)) * (theta**(N-v))
+         #    # self.
+         #
+         #    # fact = math.factorial(N) / ( math.factorial(v) * math.factorial(N-v))
+         #
+         #    num1 = part1 #* fact
+         #    den1 = part11 #* fact
+         
+            left = ((var_conf_level/theta)**(N-v))
+            right = ((1-var_conf_level)/(1-theta))**(v)
         
-            V = -2*(np.log(num1/den1))
+            V = -2*(np.log(left*right))
             self.V_val = V
         
         chi_square_test = chi2.cdf(V,1) #one degree of freedom
