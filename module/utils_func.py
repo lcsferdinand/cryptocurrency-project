@@ -67,10 +67,10 @@ def garch_df(df,p,q,o,ratio=0.25): #make data frame base on GARCH(p,q)
   if o>0:
     df['I']=0
     for i in range(len(df['Return'])):
-      if df['Return'][i] < 0:
-        df['I'][i] = 1
+      if df['Return'].iloc[i] < 0:
+        df['I'].iloc[i] = 1
       else:
-        df['I'][i]=0
+        df['I'].iloc[i]=0
 
     for i in range(o):
       df['I_multiplied_shift'+str(i)] = df['I']*df[selected_col[i]]
