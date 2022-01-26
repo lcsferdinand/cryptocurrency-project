@@ -133,12 +133,12 @@ class risk:
                 "null hypothesis": f"Probability of failure is {round(1-var_conf_level,3)}",
                 "result":result}
                 
-    def es_backtesting(self,risk,vol,i,K=1000,conf_level = 0.05):
+    def es_backtesting(self,risk,y_pred,i,K=1000,conf_level = 0.05):
       # generate y_t series
       ES = risk.ces_mat[1][i]
       x_t = [x for x in risk.return_gen if x < ES]
-      vol = minus_fix(vol.y_pred)[-1]
-      y_t = (x_t-ES)/np.sqrt(vol.y_pred)
+      vol = minus_fix(y_pred)[-1]
+      y_t = (x_t-ES)/np.sqrt(y_pred)
       var_conf_level = risk.ces_mat[0][i]
 
       #generate I_t
