@@ -138,7 +138,7 @@ class risk:
       ES = risk.ces_mat[1][i]
       x_t = [x for x in risk.return_gen if x < ES]
       vol = minus_fix(y_pred)[-1]
-      y_t = (x_t-ES)/np.sqrt(y_pred)
+      y_t = (x_t-ES)/np.sqrt(vol)
       var_conf_level = risk.ces_mat[0][i]
 
       #generate I_t
