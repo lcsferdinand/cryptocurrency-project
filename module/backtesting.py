@@ -135,11 +135,11 @@ class risk:
                 
     def es_backtesting(self,risk,vol,i,K=1000,conf_level = 0.05):
       # generate y_t series
-      ES = risk[1][i]
-      x_t = [x for x in risks_btc_garch_n.return_gen if x < ES]
-      vol = minus_fix(vol)[-1]
-      y_t = (x_t-ES)/np.sqrt(vol)
-      var_conf_level = risk[0][i]
+      ES = risk.ces_mat[1][i]
+      x_t = [x for x in risk.return_gen if x < ES]
+      vol = minus_fix(vol.y_pred)[-1]
+      y_t = (x_t-ES)/np.sqrt(vol.y_pred)
+      var_conf_level = risk.ces_mat[0][i]
 
       #generate I_t
       I_t = y_t - y_t.mean()
