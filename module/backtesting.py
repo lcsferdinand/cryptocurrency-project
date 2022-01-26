@@ -144,7 +144,7 @@ class risk:
         x_t = [x for x in matrix.return_gen if x < ES]
         vol = minus_fix(y_pred)[-1]
         y_t = (x_t-ES)/np.sqrt(vol)
-        var_conf_level = matris.ces_mat[i][0]
+        var_conf_level = matrix.ces_mat[i][0]
 
         #generate I_t
         I_t = y_t - y_t.mean()
