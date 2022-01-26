@@ -91,7 +91,7 @@ class risk:
         self.ces_mat = np.column_stack((alpha,ces))
         
 
-    def kupiec_test(self, violations, var_conf_level=0.99, conf_level=0.95):
+    def kupiec_test(self, violations, var_conf_level=0.99, conf_level=0.05):
         '''Perform Kupiec Test (1995).
         The main goal is to verify if the number of violations, i.e. proportion of failures, is consistent with the
         violations predicted by the model.
@@ -109,21 +109,11 @@ class risk:
             v = violations[violations==1].count().values[0]
 
         N = violations.shape[0]
-        theta= 1-(v/N)
+        theta= 1-(v/N) #return higher than VaR proportion 
 
         if v < 0.001:
             V = -2*np.log((1-(v/N))**(N))
         else:
-            # part1 = ((1-var_conf_level)**(v)) * (var_conf_level**(N-v))
-  #           self.part_1_left =(1-var_conf_level)**(v)
-  #           self.part_1_right = (var_conf_level**(N-v))
-  #           part11= ((1-theta)**(v)) * (theta**(N-v))
-  #           # self.
-  #
-  #           # fact = math.factorial(N) / ( math.factorial(v) * math.factorial(N-v))
-  #
-  #           num1 = part1 #* fact
-  #           den1 = part11 #* fact
             
             left = ((var_conf_level/theta)**(N-v))
             right = ((1-var_conf_level)/(1-theta))**(v)
@@ -131,12 +121,12 @@ class risk:
             V = -2*(np.log(left*right))
             self.V_val = V
         
-        chi_square_test = chi2.cdf(V,1) #one degree of freedom
+        p_val = 1-chi2.cdf(V,1) #one degree of freedom
         
-        if chi_square_test < conf_level: result = "Fail to reject H0"
-        elif v==0 and N<=255 and var_conf_level==0.99: result = "Fail to reject H0"
+        if p_val < conf_level: result = "Fail to reject H0"
+        # elif v==0 and N<=255 and var_conf_level==0.99: result = "Fail to reject H0"
         else: result = "Reject H0"
             
-        return {"statictic test":V, "chi square value":chi_square_test, 
+        return {"Chi Square Stat Value":V, "P Value":p_val, 
                 "null hypothesis": f"Probability of failure is {round(1-var_conf_level,3)}",
                 "result":result}
