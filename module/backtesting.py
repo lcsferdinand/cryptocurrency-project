@@ -137,7 +137,7 @@ class risk:
       x_t = [x for x in risks_btc_garch_n.return_gen if x < ES]
       vol = minus_fix(m_btc_garch_n.y_pred)[-1]
       y_t = (x_t-ES)/np.sqrt(vol)
-      var_conf_level = risks_btc_garch_n.es_mat[0][i]
+      var_conf_level = risk[0][i]
 
       #generate I_t
       I_t = y_t - y_t.mean()
