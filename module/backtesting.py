@@ -135,11 +135,11 @@ class risk:
                 
     def es_backtesting(self,risk,y_pred,i,K=1000,conf_level = 0.05):
       # generate y_t series
-      ES = risk.ces_mat[1][i]
+      ES = risk.ces_mat[i][1]
       x_t = [x for x in risk.return_gen if x < ES]
       vol = minus_fix(y_pred)[-1]
       y_t = (x_t-ES)/np.sqrt(vol)
-      var_conf_level = risk.ces_mat[0][i]
+      var_conf_level = risk.ces_mat[i][0]
 
       #generate I_t
       I_t = y_t - y_t.mean()
