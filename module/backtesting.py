@@ -133,41 +133,46 @@ class risk:
                 "null hypothesis": f"Probability of failure is {round(1-var_conf_level,3)}",
                 "result":result}
                 
-    def es_backtesting(self,risk,y_pred,i,K=1000,conf_level = 0.05):
-      # generate y_t series
-      ES = risk.ces_mat[i][1]
-      x_t = [x for x in risk.return_gen if x < ES]
-      vol = minus_fix(y_pred)[-1]
-      y_t = (x_t-ES)/np.sqrt(vol)
-      var_conf_level = risk.ces_mat[i][0]
+    def es_backtesting(self,matrix,y_pred,i,K=1000,conf_level = 0.05):
+        """
+        matrix: ES Matrix
+        y_pred: predicted volatility
+        K = number of generated bootstrap sample
+        """
+        # generate y_t series
+        ES = matrix.ces_mat[i][1]
+        x_t = [x for x in matrix.return_gen if x < ES]
+        vol = minus_fix(y_pred)[-1]
+        y_t = (x_t-ES)/np.sqrt(vol)
+        var_conf_level = matris.ces_mat[i][0]
 
-      #generate I_t
-      I_t = y_t - y_t.mean()
+        #generate I_t
+        I_t = y_t - y_t.mean()
 
-      #bootstrap I_t
-      I_t_dict = defaultdict(list)
-      I_t_dict['I_t_0'].extend(I_t)
+        #bootstrap I_t
+        I_t_dict = defaultdict(list)
+        I_t_dict['I_t_0'].extend(I_t)
 
-      for i in range(1,K+1):
+        for i in range(1,K+1):
         random.seed(i)
         I_t_arr=[]
         for j in range(len(I_t)):
           I_t_arr.append(random.choice(I_t))
         I_t_dict['I_t_'+str(i)].extend(I_t_arr)
 
-      #generate t(I)
-      t_I = []
-      for i in range(K+1):
+        #generate t(I)
+        t_I = []
+        for i in range(K+1):
         mean = np.mean(I_t_dict['I_t_'+str(i)])
         std = np.std(I_t_dict['I_t_'+str(i)])
         t_I.append(mean/std)
 
-      #p-val
-      p_val = np.sum([1 for x in t_I[1:] if x > t_I[0]])/K
+        #p-val
+        p_val = np.sum([1 for x in t_I[1:] if x > t_I[0]])/K
 
-      if p_val > conf_level: result = 'Fail to reject H0'
-      else: result = 'Reject H0'
+        if p_val > conf_level: result = 'Fail to reject H0'
+        else: result = 'Reject H0'
 
-      return {"P Value":p_val, 
+        return {"P Value":p_val, 
               "null hypothesis": f"Probability of failure is {round(var_conf_level,3)}",
               "result":result}
