@@ -156,8 +156,8 @@ class risk:
         for i in range(1,K+1):
             random.seed(i)
             I_t_arr=[]
-                for j in range(len(I_t)):
-                  I_t_arr.append(random.choice(I_t))
+            for j in range(len(I_t)):
+              I_t_arr.append(random.choice(I_t))
             I_t_dict['I_t_'+str(i)].extend(I_t_arr)
 
         #generate t(I)
