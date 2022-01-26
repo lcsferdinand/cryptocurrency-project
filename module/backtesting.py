@@ -123,7 +123,7 @@ class risk:
         
         p_val = 1-chi2.cdf(V,1) #one degree of freedom
         
-        if p_val < conf_level: result = "Fail to reject H0"
+        if p_val > conf_level: result = "Fail to reject H0"
         # elif v==0 and N<=255 and var_conf_level==0.99: result = "Fail to reject H0"
         else: result = "Reject H0"
             
