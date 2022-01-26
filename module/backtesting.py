@@ -13,6 +13,8 @@ import arch
 import time
 import pandas as pd
 import random
+from collections import defaultdict
+
 
 def minus_fix(minus_array):
   for i in range(len(minus_array)):
@@ -131,11 +133,11 @@ class risk:
                 "null hypothesis": f"Probability of failure is {round(1-var_conf_level,3)}",
                 "result":result}
                 
-    def es_backtesting(self,risk,i,K=1000,conf_level = 0.05):
+    def es_backtesting(self,risk,vol,i,K=1000,conf_level = 0.05):
       # generate y_t series
       ES = risk[1][i]
       x_t = [x for x in risks_btc_garch_n.return_gen if x < ES]
-      vol = minus_fix(m_btc_garch_n.y_pred)[-1]
+      vol = minus_fix(vol)[-1]
       y_t = (x_t-ES)/np.sqrt(vol)
       var_conf_level = risk[0][i]
 
