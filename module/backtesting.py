@@ -130,3 +130,42 @@ class risk:
         return {"Chi Square Stat Value":V, "P Value":p_val, 
                 "null hypothesis": f"Probability of failure is {round(1-var_conf_level,3)}",
                 "result":result}
+                
+    def es_backtesting(self,risk,i,K=1000,conf_level = 0.05):
+      # generate y_t series
+      ES = risk[1][i]
+      x_t = [x for x in risks_btc_garch_n.return_gen if x < ES]
+      vol = minus_fix(m_btc_garch_n.y_pred)[-1]
+      y_t = (x_t-ES)/np.sqrt(vol)
+      var_conf_level = risks_btc_garch_n.es_mat[0][i]
+
+      #generate I_t
+      I_t = y_t - y_t.mean()
+
+      #bootstrap I_t
+      I_t_dict = defaultdict(list)
+      I_t_dict['I_t_0'].extend(I_t)
+
+      for i in range(1,K+1):
+        random.seed(i)
+        I_t_arr=[]
+        for j in range(len(I_t)):
+          I_t_arr.append(random.choice(I_t))
+        I_t_dict['I_t_'+str(i)].extend(I_t_arr)
+
+      #generate t(I)
+      t_I = []
+      for i in range(K+1):
+        mean = np.mean(I_t_dict['I_t_'+str(i)])
+        std = np.std(I_t_dict['I_t_'+str(i)])
+        t_I.append(mean/std)
+
+      #p-val
+      p_val = np.sum([1 for x in t_I[1:] if x > t_I[0]])/K
+
+      if p_val < conf_level: result = 'Fail to reject H0'
+      else: result = 'Reject H0'
+
+      return {"P Value":p_val, 
+              "null hypothesis": f"Probability of failure is {round(var_conf_level,3)}",
+              "result":result}
