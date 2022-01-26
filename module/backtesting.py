@@ -165,7 +165,7 @@ class risk:
       #p-val
       p_val = np.sum([1 for x in t_I[1:] if x > t_I[0]])/K
 
-      if p_val < conf_level: result = 'Fail to reject H0'
+      if p_val > conf_level: result = 'Fail to reject H0'
       else: result = 'Reject H0'
 
       return {"P Value":p_val, 
