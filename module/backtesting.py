@@ -159,6 +159,7 @@ class risk:
             for j in range(len(I_t)):
               I_t_arr.append(random.choice(I_t))
             I_t_dict['I_t_'+str(i)].extend(I_t_arr)
+        self.I_t_dictt = I_t_dict
 
         #generate t(I)
         t_I = []
@@ -166,6 +167,7 @@ class risk:
             mean = np.mean(I_t_dict['I_t_'+str(i)])
             std = np.std(I_t_dict['I_t_'+str(i)])
             t_I.append(mean/std)
+        self.t_i = t_I
 
         #p-val
         p_val = np.sum([1 for x in t_I[1:] if x > t_I[0]])/K
