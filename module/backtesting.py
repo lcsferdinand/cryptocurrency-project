@@ -133,18 +133,18 @@ class risk:
                 "null hypothesis": f"Probability of failure is {round(1-var_conf_level,3)}",
                 "result":result}
                 
-    def es_backtesting(self,y_pred,i,K=1000,conf_level = 0.05):
+    def es_backtesting(self,y_pred,k,K=1000,conf_level = 0.05):
         """
         matrix: ES Matrix
         y_pred: predicted volatility
         K = number of generated bootstrap sample
         """
         # generate y_t series
-        es = self.ces_mat[i][1]
+        es = self.es_mat[k][1]
         x_t = [x for x in self.return_gen if x < es]
         vol = minus_fix(y_pred)[-1]
         y_t = (x_t-es)/np.sqrt(vol)
-        var_conf_level = self.ces_mat[i][0]
+        var_conf_level = self.es_mat[k][0]
 
         #generate I_t
         I_t = y_t - y_t.mean()
@@ -159,7 +159,6 @@ class risk:
             for j in range(len(I_t)):
               I_t_arr.append(random.choice(I_t))
             I_t_dict['I_t_'+str(i)].extend(I_t_arr)
-        self.I_t_dictt = I_t_dict
 
         #generate t(I)
         t_I = []
@@ -167,7 +166,6 @@ class risk:
             mean = np.mean(I_t_dict['I_t_'+str(i)])
             std = np.std(I_t_dict['I_t_'+str(i)])
             t_I.append(mean/std)
-        self.t_i = t_I
 
         #p-val
         p_val = np.sum([1 for x in t_I[1:] if x > t_I[0]])/K
