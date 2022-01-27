@@ -133,18 +133,18 @@ class risk:
                 "null hypothesis": f"Probability of failure is {round(1-var_conf_level,3)}",
                 "result":result}
                 
-    def es_backtesting(self,matrix,y_pred,i,K=1000,conf_level = 0.05):
+    def es_backtesting(self,ES,retrun_gen,y_pred,alpha,i,K=1000,conf_level = 0.05):
         """
         matrix: ES Matrix
         y_pred: predicted volatility
         K = number of generated bootstrap sample
         """
         # generate y_t series
-        ES = matrix.ces_mat[i][1]
-        x_t = [x for x in matrix.return_gen if x < ES]
+        es = ES
+        x_t = [x for x in return_gen if x < es]
         vol = minus_fix(y_pred)[-1]
-        y_t = (x_t-ES)/np.sqrt(vol)
-        var_conf_level = matrix.ces_mat[i][0]
+        y_t = (x_t-es)/np.sqrt(vol)
+        var_conf_level = alpha
 
         #generate I_t
         I_t = y_t - y_t.mean()
