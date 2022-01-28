@@ -40,16 +40,20 @@ class data:
         coins['Return'][i]=m.log(coins['Close'][i+1]/coins['Close'][i])*100
       globals()['self.%s' % coins] = coins.iloc[:-1]
       
-    index_p = self.btc.loc[self.btc['Date']=='2020-03-03'].index[0]
+    index_btcsp = self.btc.loc[self.btc['Date']=='2020-03-03'].index[0]
+    index_eth_p = self.eth.loc[self.eth['Date']=='2020-03-03'].index[0]
+    index_tether_p = self.tether.loc[self.tether['Date']=='2020-03-03'].index[0]
+    index_bnb_p = self.bnb.loc[self.bnb['Date']=='2020-03-03'].index[0]
     
-    self.btc_n = self.btc.iloc[:index_p]
-    self.btc_p = self.btc.iloc[index_p:]
-    self.eth_n = self.eth.iloc[:index_p]
-    self.eth_p = self.eth.iloc[index_p:]
-    self.tether_n = self.tether.iloc[:index_p]
-    self.tether_p = self.tether.iloc[index_p:]
-    self.bnb_n = self.bnb.iloc[:index_p]
-    self.bnb_p = self.bnb.iloc[index_p:]
+    
+    self.btc_n = self.btc.iloc[:index_btcsp]
+    self.btc_p = self.btc.iloc[index_btcsp:]
+    self.eth_n = self.eth.iloc[:index_eth_p]
+    self.eth_p = self.eth.iloc[index_eth_p:]
+    self.tether_n = self.tether.iloc[:index_tether_p]
+    self.tether_p = self.tether.iloc[index_tether_p:]
+    self.bnb_n = self.bnb.iloc[:index_bnb_p]
+    self.bnb_p = self.bnb.iloc[index_bnb_p:]
 
     self.ret_btc_n = self.btc_n[['Return']]
     self.ret_btc_p = self.btc_p[['Return']]
