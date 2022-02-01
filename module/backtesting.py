@@ -3,7 +3,6 @@ import math as m
 from itertools import chain
 import random
 import pandas as pd
-# import vartests
 from scipy import stats
 import numpy as np
 from scipy import optimize
@@ -116,17 +115,13 @@ class risk:
         if v < 0.001:
             V = -2*np.log((1-(v/N))**(N))
         else:
-            
-            left = ((var_conf_level/theta)**(N-v))
-            right = ((1-var_conf_level)/(1-theta))**(v)
         
-            V = -2*(np.log(left*right))
+            V = 2*m.log((((1-theta)/(1-var_conf_level))**(v)) * (((theta)/var_conf_level)**(N-v)))
             self.V_val = V
         
         p_val = 1-chi2.cdf(V,1) #one degree of freedom
         
         if p_val > conf_level: result = "Fail to reject H0"
-        # elif v==0 and N<=255 and var_conf_level==0.99: result = "Fail to reject H0"
         else: result = "Reject H0"
             
         return {"Chi Square Stat Value":V, "P Value":p_val, 
